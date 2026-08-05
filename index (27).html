@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Televendas | Rede Nilo</title>
+<style>
+:root{
+  --bg:#F7F7F5;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --text:#333333;
+  --muted:#6b7280;
+  --line:#e4e7ec;
+  --primary:#FFC400;
+  --primary-dark:#E6A100;
+  --navy:#1B2A4A;
+  --green:#17834f;
+  --red:#c93c3c;
+  --orange:#dc7b14;
+  --blue:#2962b8;
+  --shadow:0 10px 30px rgba(27,42,74,.08);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.header{background:linear-gradient(135deg,var(--navy),#243a63);color:#fff;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:sticky;top:0;z-index:30;box-shadow:0 6px 18px rgba(17,27,45,.18)}
+.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:48px;height:48px;border-radius:14px;background:var(--primary);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:22px}
+.brand h1{font-size:20px;margin:0 0 4px}.brand p{font-size:12px;margin:0;color:#cfd7e5}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.clock{font-variant-numeric:tabular-nums;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:10px 12px;border-radius:10px}
+.sync{font-size:11px;color:#cfd7e5}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--primary);color:var(--navy)}.btn-primary:hover{background:#ffd633}
+.btn-light{background:#fff;color:var(--navy)}.btn-dark{background:var(--navy);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+.btn-danger{background:#fff0f0;color:var(--red);border:1px solid #f4caca}
+.btn-sm{padding:7px 10px;font-size:12px}
+.main{padding:22px 26px 36px;max-width:1900px;margin:0 auto}
+.toolbar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;align-items:end;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow);margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:150px}.field label{font-size:12px;color:var(--muted);font-weight:700}
+.field input,.field select,.field textarea{border:1px solid #d6dae2;border-radius:9px;padding:10px 11px;background:#fff;color:var(--text)}
+.toolbar-spacer{flex:1}.quick-filters{display:flex;gap:7px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:18px}.tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:10px 16px;border-radius:999px;font-weight:800}.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.view{display:none}.view.active{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:17px;box-shadow:var(--shadow)}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:700}.kpi .value{font-size:26px;font-weight:900;margin-top:8px}.kpi .sub{font-size:11px;color:var(--muted);margin-top:6px}
+.kpi.good .value{color:var(--green)}.kpi.bad .value{color:var(--red)}.kpi.warn .value{color:var(--orange)}
+.grid-2{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.panel h2{font-size:16px;margin:0 0 4px}.panel .hint{color:var(--muted);font-size:12px;margin:0 0 16px}
+.stage-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stage-metric{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);padding:14px}
+.stage-metric .name{font-size:11px;color:var(--muted);min-height:30px}.stage-metric .time{font-size:17px;font-weight:900;margin-top:8px}
+.chart-bars{display:flex;align-items:end;gap:8px;height:210px;border-bottom:1px solid var(--line);padding:8px 4px 0;overflow-x:auto}
+.bar-col{min-width:34px;flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.bar{width:72%;min-height:2px;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:6px 6px 0 0}
+.bar-label{font-size:10px;color:var(--muted)}
+.status-list{display:flex;flex-direction:column;gap:12px}.status-row{display:grid;grid-template-columns:145px 1fr 42px;align-items:center;gap:10px;font-size:12px}
+.status-track{height:10px;background:#eef1f5;border-radius:999px;overflow:hidden}.status-fill{height:100%;border-radius:999px}.status-count{text-align:right;font-weight:800}
+.kanban-wrap{overflow:visible;padding-bottom:8px}.kanban{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;width:100%}
+.kanban-col{background:#edf1f5;border:1px solid #dfe4eb;border-radius:12px;min-height:300px;padding:8px}
+.kanban-col.drag-over{outline:3px solid rgba(255,196,0,.55);background:#fff8dc}
+.col-head{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:2px 2px 8px}
+.col-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--text);line-height:1.2}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.badge{width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:11px;flex:0 0 auto}
+.cards{display:flex;flex-direction:column;gap:8px}
+.order-card{background:#fff;border:1.5px solid rgba(201,60,60,.22);border-radius:12px;padding:10px;box-shadow:0 4px 10px rgba(17,27,45,.05);cursor:grab}
+.order-card.dragging{opacity:.55}
+.order-card.priority,.order-card.late{border-left:3px solid var(--red)}
+.order-urgent{color:var(--red);font-weight:900;font-size:9px;letter-spacing:.02em;margin:1px 0 5px}
+.order-changes-pill{display:inline-flex;align-items:center;gap:4px;background:#fff1d6;color:#915b00;font-weight:800;font-size:9px;padding:3px 7px;border-radius:999px;margin:1px 0 5px;white-space:nowrap}
+.order-top{display:flex;justify-content:space-between;align-items:center;gap:5px}
+.order-id{font-size:10px;color:var(--muted);font-weight:800}
+.order-type-pill{font-size:9px;background:#eef1f5;color:var(--text);padding:3px 8px;border-radius:999px;font-weight:800;white-space:nowrap}
+.card-delete{width:20px;height:20px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--red);font-size:13px;line-height:1;padding:0;display:grid;place-items:center;flex:0 0 auto}
+.blink-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;animation:blinkDot 1s ease-in-out infinite}
+.blink-dot.blink-red{background:var(--red)}
+.blink-dot.blink-yellow{background:#f2c200}
+@keyframes blinkDot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(201,60,60,.5)}50%{opacity:.25;box-shadow:0 0 0 4px rgba(201,60,60,0)}}
+.card-delete:hover{background:#fff0f0;border-color:#f4caca}
+.order-client{font-size:12px;font-weight:900;margin:6px 0 5px;color:var(--text);line-height:1.25}
+.order-line{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);margin-bottom:4px;flex-wrap:wrap}
+.order-line .ic{font-size:10px}
+.order-line.assign{font-weight:800}
+.order-line.assign .missing{color:var(--orange)}
+.order-line.assign .set{color:var(--text)}
+.timer-box{background:#f4f6f9;border-radius:9px;padding:7px;margin:8px 0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.timer-label{font-size:7.5px;text-transform:uppercase;color:var(--muted);font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.timer-value{font-weight:900;font-size:11px;margin-top:2px;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.order-sub{font-size:9px;color:var(--muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-sub b{color:var(--text);font-weight:800}
+.order-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}
+.order-actions .btn{min-width:0;padding:7px 3px;font-size:9.5px;border-radius:8px;font-weight:800;background:#fff;border:1px solid var(--line);color:var(--text);line-height:1.15}
+.order-actions .btn.btn-advance{background:var(--primary);color:var(--navy);border:0}
+.order-actions .btn.btn-advance:hover{background:var(--primary-dark)}
+.order-actions .btn.btn-done{background:#e9f7ef;color:var(--green);border:1px solid #bfe4ce}
+.sla-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.daily-sla-display{border:1px solid var(--line);background:#f8fafc;border-radius:10px;padding:8px 11px;min-width:190px}
+.daily-sla-display .daily-label{font-size:9px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.daily-sla-display .daily-value{font-size:12px;font-weight:900;margin-top:3px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+.data-table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff}
+.data-table th{position:sticky;top:0;background:var(--navy);color:#fff;text-align:left;font-size:11px;padding:11px 10px;white-space:nowrap}
+.data-table td{padding:10px;border-bottom:1px solid var(--line);font-size:11px;white-space:nowrap}
+.data-table tr:hover td{background:#fffbea}
+.sla-ok{color:var(--green);background:#e9f7ef;border-radius:999px;padding:4px 8px;font-weight:800;font-size:10px}
+.sla-bad{color:var(--red);background:#fff0f0;border-radius:999px;padding:4px 8px;font-weight:800;font-size:10px}
+.client-tools{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.search{min-width:280px;flex:1;border:1px solid #d6dae2;border-radius:10px;padding:10px 12px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(10,17,28,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:100}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:18px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.28)}
+.modal.modal-wide{width:min(1000px,100%)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;font-size:18px}.modal-body{padding:20px}
+.modal-foot{padding:15px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+.close{background:#f2f4f7;border:0;width:34px;height:34px;border-radius:9px;font-size:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.span-2{grid-column:span 2}
+.note{background:#fff8db;border:1px solid #f5dd8a;border-radius:10px;padding:11px;font-size:11px;color:#6d5710;margin-bottom:14px}
+.whatsapp-order{margin:0;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #dfe4eb;border-radius:10px;padding:14px;min-height:120px;max-height:260px;overflow:auto;font-size:12px;line-height:1.55}
+.changes-table{width:100%;border-collapse:collapse;margin-top:10px}.changes-table th{background:var(--navy);color:#fff;padding:8px;text-align:left;font-size:10px}.changes-table td{padding:8px;border-bottom:1px solid var(--line);font-size:10px}
+.change-type{display:inline-flex;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:900;background:#eef1f5}
+.change-type.cancel{background:#fff0f0;color:var(--red)}.change-type.replace{background:#fff1d6;color:#915b00}.change-type.add{background:#e9f7ef;color:var(--green)}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.toast{position:fixed;right:22px;bottom:22px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);z-index:200;opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:translateY(0)}
+.footer-note{font-size:11px;color:var(--muted);text-align:center;padding-top:16px}
+@media(max-width:1250px){.kpis{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:1fr}.stage-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.kanban{grid-template-columns:repeat(3,minmax(0,1fr))}.form-grid{grid-template-columns:1fr}.span-2{grid-column:span 1}}
+@media(max-width:720px){.header{padding:14px}.brand p{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.stage-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div><h1>Painel de Televendas</h1><p>Kanban operacional, SLA e cronoanálise — Rede Nilo</p></div>
+    </div>
+    <div class="header-actions">
+      <div class="sync" id="syncStatus">Conectando à planilha...</div>
+      <div class="clock" id="liveClock">--:--:--</div>
+      <button class="btn btn-light" onclick="openClientModal()">＋ Cadastrar cliente</button>
+      <button class="btn btn-primary" onclick="openOrderModal()">＋ Novo pedido</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="toolbar">
+      <div class="field"><label>Data inicial</label><input type="date" id="dateStart" onchange="renderAll()"></div>
+      <div class="field"><label>Data final</label><input type="date" id="dateEnd" onchange="renderAll()"></div>
+      <div class="quick-filters">
+        <button class="btn btn-outline btn-sm" onclick="setQuickDate('today')">Hoje</button>
+        <button class="btn btn-outline btn-sm" onclick="setQuickDate('yesterday')">Ontem</button>
+        <button class="btn btn-outline btn-sm" onclick="setQuickDate('7days')">Últimos 7 dias</button>
+        <button class="btn btn-danger btn-sm" onclick="clearFilters()">✕ Limpar filtros</button>
+      </div>
+      <div class="toolbar-spacer"></div>
+      <div class="sla-toolbar">
+        <div class="daily-sla-display" id="dailySlaDisplay"><div class="daily-label">SLA do dia</div><div class="daily-value">Carregando...</div></div>
+        <button class="btn btn-outline" type="button" onclick="openDailySlaModal()">⏱ Cadastrar SLA do dia</button>
+      </div>
+      <button class="btn btn-dark" onclick="exportExcel()">⬇ Exportar Excel</button>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-view="dashboard" onclick="switchView('dashboard',this)">Dashboard</button>
+      <button class="tab" data-view="kanban" onclick="switchView('kanban',this)">Kanban</button>
+      <button class="tab" data-view="analysis" onclick="switchView('analysis',this)">Cronoanálise</button>
+      <button class="tab" data-view="separation" onclick="switchView('separation',this)">Separação</button>
+      <button class="tab" data-view="occurrences" onclick="switchView('occurrences',this)">Ocorrência</button>
+      <button class="tab" data-view="clients" onclick="switchView('clients',this)">Clientes</button>
+    </nav>
+
+    <section class="view active" id="view-dashboard">
+      <div class="kpis" id="kpiGrid"></div>
+      <div class="panel" style="margin-bottom:18px">
+        <h2>Tempos médios por etapa</h2><p class="hint">Cálculo baseado nos pedidos do período selecionado que possuem os horários necessários.</p>
+        <div class="stage-grid" id="stageMetrics"></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel"><h2>Pedidos recebidos por hora</h2><p class="hint">Distribuição conforme horário de entrada.</p><div class="chart-bars" id="hourChart"></div></div>
+        <div class="panel"><h2>Distribuição por etapa</h2><p class="hint">Posição atual dos pedidos no fluxo.</p><div class="status-list" id="statusChart"></div></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-kanban">
+      <p class="hint" id="kanbanHint" style="margin-bottom:12px">Mostrando pedidos pendentes + concluídos de hoje. Use os filtros de data acima para ver pedidos concluídos de outros dias.</p>
+      <div class="kanban-wrap"><div class="kanban" id="kanbanBoard"></div></div>
+    </section>
+
+    <section class="view" id="view-analysis">
+      <div class="panel">
+        <h2>Relatório de cronoanálise</h2>
+        <p class="hint"><b>Padrão de leitura:</b> durações em horas, minutos e segundos — ex.: <b>01h 11min 00s</b>. O <b>tempo médio por item</b> é a separação dividida pela quantidade de itens.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Pedido</th><th>Cliente</th><th>Separador</th><th>Itens</th><th>Recebido</th><th>Início separação</th><th>Fim coleta</th><th>Checkout</th><th>Saída</th><th>Recebido pelo cliente</th>
+          <th>Espera separação</th><th>Separação</th><th>Média / item</th><th>Coleta→checkout</th><th>Checkout→saída</th><th>Saída→recebimento</th><th>Ciclo total</th><th>SLA aplicável</th><th>Resultado</th>
+        </tr></thead><tbody id="analysisBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-separation">
+      <div class="toolbar" style="margin-bottom:18px">
+        <div class="field"><label>Separador</label><select id="separationFilter" onchange="renderSeparation()"><option value="">Todos</option></select></div>
+      </div>
+      <div class="kpis" id="separationKpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px"></div>
+      <div class="grid-2">
+        <div class="panel"><h2>Ranking por tempo de separação</h2><p class="hint">Tempo total em separação por separador, no período filtrado.</p><div class="status-list" id="separationTimeChart"></div></div>
+        <div class="panel"><h2>Ranking por quantidade de itens</h2><p class="hint">Itens separados por separador, no período filtrado.</p><div class="status-list" id="separationItemsChart"></div></div>
+      </div>
+      <div class="panel">
+        <h2>Ranking de separadores</h2>
+        <p class="hint">Baseado nos pedidos do período com separação concluída (início e fim registrados). Ritmo = soma de itens ÷ tempo total em separação — exibido em itens/min quando o tempo total for menor que 1h (fica mais fácil de ler), ou em itens/h quando passar de 1h.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>#</th><th>Separador</th><th>Pedidos</th><th>Itens separados</th><th>Tempo total em separação</th><th>Ritmo (itens/min ou /h)</th><th>Tempo médio / item</th>
+        </tr></thead><tbody id="separationBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-occurrences">
+      <div class="toolbar">
+        <div class="field"><label>Data inicial</label><input type="date" id="occDateStart" onchange="renderOccurrences()"></div>
+        <div class="field"><label>Data final</label><input type="date" id="occDateEnd" onchange="renderOccurrences()"></div>
+        <div class="field"><label>Tipo de ocorrência</label><select id="occFilterType" onchange="renderOccurrences()"><option value="">Todos</option></select></div>
+        <div class="field"><label>Setor</label><select id="occFilterSector" onchange="renderOccurrences()"><option value="">Todos</option></select></div>
+        <div class="field"><label>Cliente</label><select id="occFilterClient" onchange="renderOccurrences()"><option value="">Todos</option></select></div>
+        <div class="toolbar-spacer"></div>
+        <button class="btn btn-primary" onclick="openOccurrenceModal()">＋ Registrar ocorrência</button>
+      </div>
+
+      <div class="kpis" id="occKpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px"></div>
+
+      <div class="grid-2">
+        <div class="panel"><h2>Ocorrências por tipo</h2><p class="hint">Distribuição no período filtrado.</p><div class="status-list" id="occTypeChart"></div></div>
+        <div class="panel"><h2>Ocorrências por setor de origem</h2><p class="hint">Onde o erro se originou.</p><div class="status-list" id="occSectorChart"></div></div>
+      </div>
+
+      <div class="panel" style="margin-bottom:18px">
+        <h2>Clientes mais afetados</h2>
+        <p class="hint">Ranking de clientes com mais ocorrências registradas no período.</p>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Cliente</th><th>Ocorrências</th><th>Tipo mais comum</th></tr></thead><tbody id="occClientRanking"></tbody></table></div>
+      </div>
+
+      <div class="panel">
+        <h2>Registro de ocorrências</h2>
+        <div class="table-wrap"><table class="data-table"><thead><tr>
+          <th>Data</th><th>Cliente</th><th>Pedido</th><th>Tipo</th><th>Responsável</th><th>Setor</th><th>Descrição</th><th>Ações</th>
+        </tr></thead><tbody id="occurrencesBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-clients">
+      <div class="panel">
+        <div class="client-tools"><div><h2>Cadastro de clientes</h2><p class="hint" style="margin-bottom:0">Base sincronizada com a planilha Google Sheets.</p></div>
+          <input class="search" id="clientSearch" placeholder="Pesquisar cliente, telefone, bairro ou código..." oninput="renderClients()"></div>
+        <div class="table-wrap"><table class="data-table" style="min-width:1000px"><thead><tr><th>Código</th><th>Cliente</th><th>Telefone</th><th>Tipo</th><th>Bairro</th><th>Cidade</th><th>Endereço</th><th>Ações</th></tr></thead><tbody id="clientsBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <div class="footer-note">Dados sincronizados com o Google Sheets. Utilize a exportação em Excel para arquivamento histórico.</div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="orderModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Cadastrar novo pedido</h3><button type="button" class="close" onclick="closeModal('orderModal')">×</button></div>
+    <div class="modal-body">
+      <div class="note">Selecione o cliente. Colar a mensagem do WhatsApp é opcional, mas ajuda na conferência.</div>
+      <div class="form-grid">
+        <div class="field span-2"><label>Cliente *</label><select id="orderClient"></select></div>
+        <div class="field"><label>Modalidade *</label><select id="orderType"><option value="Entrega">Entrega</option><option value="Retirada">Retirada</option></select></div>
+        <div class="field"><label>Prioridade</label><select id="orderPriority"><option value="Normal">Normal</option><option value="Urgente">Urgente</option></select></div>
+        <div class="field"><label>Quantidade de itens *</label><input type="number" id="orderItemCount" min="1" step="1" value="1"></div>
+        <div class="field span-2"><label>Pedido recebido pelo WhatsApp (opcional)</label><textarea id="orderOriginalText" rows="10" placeholder="Cole aqui a mensagem completa do cliente, se houver."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('orderModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveOrder()">Salvar pedido</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="clientModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="clientModalTitle">Cadastrar cliente</h3><button type="button" class="close" onclick="closeModal('clientModal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="clientEditId">
+      <div class="form-grid">
+        <div class="field span-2"><label>Nome ou razão social *</label><input id="clientName"></div>
+        <div class="field"><label>Telefone *</label><input id="clientPhone" placeholder="(66) 99999-9999"></div>
+        <div class="field"><label>Tipo</label><select id="clientType"><option value="Pessoa física">Pessoa física</option><option value="Empresa">Empresa</option></select></div>
+        <div class="field"><label>Bairro</label><input id="clientDistrict"></div>
+        <div class="field"><label>Cidade</label><input id="clientCity" value="Barra do Garças - MT"></div>
+        <div class="field span-2"><label>Endereço</label><input id="clientAddress"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('clientModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveClient()">Salvar cliente</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="detailModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Detalhes e correção de horários</h3><button type="button" class="close" onclick="closeModal('detailModal')">×</button></div>
+    <div class="modal-body" id="detailContent"></div>
+    <div class="modal-foot"><button type="button" class="btn btn-danger" id="deleteOrderBtn">Excluir pedido</button><button type="button" class="btn btn-outline" onclick="closeModal('detailModal')">Fechar</button><button type="button" class="btn btn-primary" id="saveTimesBtn">Salvar alterações</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="itemsModal">
+  <div class="modal modal-wide">
+    <div class="modal-head"><h3>Pedido e alterações</h3><button type="button" class="close" onclick="closeModal('itemsModal')">×</button></div>
+    <div class="modal-body">
+      <section class="original-order-box">
+        <h4>Pedido original recebido pelo WhatsApp</h4>
+        <pre class="whatsapp-order" id="originalOrderText"></pre>
+      </section>
+      <h4>Registrar substituição / cancelamento / inclusão</h4>
+      <div class="form-grid">
+        <div class="field"><label>Tipo</label><select id="changeType"><option value="Substituição">Substituição</option><option value="Cancelamento">Cancelamento</option><option value="Inclusão">Inclusão</option></select></div>
+        <div class="field"><label>Quantidade</label><input id="changeQty" placeholder="Ex.: 2 UN"></div>
+        <div class="field"><label>Produto original</label><input id="changeOriginal"></div>
+        <div class="field"><label>Produto resultado</label><input id="changeResult"></div>
+        <div class="field span-2"><label>Motivo / observação</label><input id="changeReason"></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button type="button" class="btn btn-primary btn-sm" onclick="addChange()">＋ Registrar alteração</button></div>
+      <table class="changes-table"><thead><tr><th>Data</th><th>Tipo</th><th>Qtd</th><th>Original</th><th>Resultado</th><th>Motivo</th></tr></thead><tbody id="changesBody"></tbody></table>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('itemsModal')">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="assignmentModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Separador e SLA do pedido</h3><button type="button" class="close" onclick="closeModal('assignmentModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field span-2"><label>Nome do separador *</label><input id="assignmentSeparator"></div>
+        <div class="field"><label>Quantidade de itens *</label><input type="number" id="assignmentItemCount" min="1" step="1"></div>
+        <div class="field"><label>SLA — horas *</label><input type="number" id="assignmentSlaHours" min="0" step="1"></div>
+        <div class="field"><label>SLA — minutos *</label><input type="number" id="assignmentSlaMinutes" min="0" max="59" step="1"></div>
+        <div class="field span-2"><label>Observação</label><input id="assignmentNote"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('assignmentModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveAssignment()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="dailySlaModal">
+  <div class="modal">
+    <div class="modal-head"><h3>SLA do dia</h3><button type="button" class="close" onclick="closeModal('dailySlaModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label>Data</label><input type="date" id="dailySlaDate"></div>
+        <div class="field"><label>SLA padrão (minutos)</label><input type="number" id="dailySlaMinutes" min="0" step="1"></div>
+        <div class="field span-2"><label>Observação</label><input id="dailySlaNote"></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('dailySlaModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveDailySla()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="occurrenceModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Registrar ocorrência</h3><button type="button" class="close" onclick="closeModal('occurrenceModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field span-2"><label>Cliente *</label><select id="occClient"></select></div>
+        <div class="field"><label>Data *</label><input type="date" id="occDate"></div>
+        <div class="field"><label>Pedido relacionado (opcional)</label><select id="occOrder"><option value="">Nenhum</option></select></div>
+        <div class="field"><label>Tipo de ocorrência *</label><select id="occType" onchange="onOccTypeChange()"></select></div>
+        <div class="field" id="occNewTypeField" style="display:none"><label>Novo tipo de ocorrência</label><input id="occNewType" placeholder="Descreva o novo tipo"></div>
+        <div class="field"><label>Nome do responsável (origem do erro) *</label><input id="occName" placeholder="Ex.: João Pereira"></div>
+        <div class="field"><label>Setor de origem *</label><select id="occSector" onchange="onOccSectorChange()"></select></div>
+        <div class="field" id="occNewSectorField" style="display:none"><label>Novo setor de origem</label><input id="occNewSector" placeholder="Descreva o novo setor"></div>
+        <div class="field span-2"><label>Descrição / observação</label><textarea id="occDescription" rows="4" placeholder="Detalhe o que ocorreu."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn btn-outline" onclick="closeModal('occurrenceModal')">Cancelar</button><button type="button" class="btn btn-primary" onclick="saveOccurrence()">Salvar ocorrência</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ===== CONFIGURAÇÃO — cole aqui a URL do Web App do Apps Script (termina em /exec) =====
+const API_URL = 'https://script.google.com/macros/s/AKfycbyB6EaknvsZB-g2YvDQL7SLeWVt0akqfdGfXwujJ2teCKEoZKnBtlosxXHEES433B1k/exec';
+
+const stages=[
+  {key:'RecebidoEm',title:'Pedido recebido',short:'Recebido',color:'#2962b8'},
+  {key:'InicioSeparacao',title:'Em separação',short:'Separação',color:'#7b4eb2'},
+  {key:'FimColeta',title:'Coleta finalizada',short:'Coleta concluída',color:'#dc7b14'},
+  {key:'CheckoutFinalizado',title:'Checkout finalizado',short:'Checkout',color:'#b0578d'},
+  {key:'SaidaLoja',title:'Saiu da loja',short:'Expedição / retirada',color:'#148a92'},
+  {key:'ClienteRecebeu',title:'Cliente recebeu',short:'Entregue',color:'#17834f'}
+];
+
+let clients=[], orders=[], changes=[], dailySlas=[], occurrences=[], occurrenceTypes=[], occurrenceSectors=[];
+let selectedDetailId=null, selectedItemsOrderId=null, selectedAssignmentOrderId=null;
+let pendingSaveIds = new Set(); // pedidos/clientes criados localmente ainda sem confirmação de gravação na planilha
+let suppressAutoRefreshUntil = 0;
+
+async function api(action, payload){
+  try{
+    const res = await fetch(API_URL, {method:'POST', body: JSON.stringify({action, payload})});
+    const result = await res.json();
+    if(result && result.ok) suppressAutoRefreshUntil = Date.now()+8000;
+    return result;
+  }catch(err){
+    console.error('Falha de rede ao chamar a planilha:', err);
+    return {ok:false, error:String(err)};
+  }
+}
+async function loadAll(){
+  document.getElementById('syncStatus').textContent='Sincronizando...';
+  try{
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    if(Date.now() < suppressAutoRefreshUntil || pendingSaveIds.size>0){
+      // evita sobrescrever pedidos/clientes recém-criados que ainda não foram confirmados na planilha
+      document.getElementById('syncStatus').textContent='Sincronizado (aguardando confirmação de gravações recentes)';
+    } else {
+      clients = data.clients||[]; orders = data.orders||[]; changes = data.changes||[]; dailySlas = data.dailySlas||[];
+      occurrences = data.occurrences||[]; occurrenceTypes = data.occurrenceTypes||[]; occurrenceSectors = data.occurrenceSectors||[];
+      document.getElementById('syncStatus').textContent='Sincronizado com a planilha';
+    }
+  }catch(err){
+    document.getElementById('syncStatus').textContent='Falha ao conectar à planilha — verifique API_URL';
+    console.error(err);
+  }
+  renderAll();
+}
+
+function nextOrderId(){const max=orders.reduce((m,o)=>Math.max(m,parseInt(String(o.ID||'').replace(/\D/g,''),10)||0),1000);return 'PED-'+(max+1);}
+function nextClientId(){const max=clients.reduce((m,c)=>Math.max(m,parseInt(String(c.ID||'').replace(/\D/g,''),10)||0),100);return 'CLI-'+(max+1);}
+
+function inferStatus(o){let s=0;stages.forEach((st,i)=>{if(o[st.key])s=i;});return s;}
+
+// ===== FILTROS =====
+function currentRange(){
+  const s=document.getElementById('dateStart').value, e=document.getElementById('dateEnd').value;
+  return {start: s? new Date(s+'T00:00:00'): null, end: e? new Date(e+'T23:59:59'): null};
+}
+function setQuickDate(kind){
+  const today=new Date(); const fmt=d=>d.toISOString().slice(0,10);
+  if(kind==='today'){document.getElementById('dateStart').value=fmt(today);document.getElementById('dateEnd').value=fmt(today);}
+  else if(kind==='yesterday'){const d=new Date();d.setDate(d.getDate()-1);document.getElementById('dateStart').value=fmt(d);document.getElementById('dateEnd').value=fmt(d);}
+  else if(kind==='7days'){const d=new Date();d.setDate(d.getDate()-6);document.getElementById('dateStart').value=fmt(d);document.getElementById('dateEnd').value=fmt(today);}
+  renderAll();
+}
+function clearFilters(){document.getElementById('dateStart').value='';document.getElementById('dateEnd').value='';renderAll();}
+function filteredOrders(){
+  const {start,end}=currentRange();
+  return orders.filter(o=>{
+    if(!o.RecebidoEm) return true;
+    const d=new Date(o.RecebidoEm);
+    if(start && d<start) return false;
+    if(end && d>end) return false;
+    return true;
+  });
+}
+
+// ===== TABS =====
+function switchView(view, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+}
+
+// ===== RENDER =====
+function renderAll(){
+  renderKpis(); renderStageMetrics(); renderHourChart(); renderStatusChart();
+  renderKanban(); renderAnalysis(); renderSeparation(); renderOccurrences(); renderClients(); renderOrderClientSelect(); renderDailySla();
+}
+
+function fmtHoursMin(totalMinutes){
+  const n=Number(totalMinutes)||0; const h=Math.floor(n/60), m=n%60;
+  return h>0 ? `${h}h ${String(m).padStart(2,'0')}min` : `${m}min`;
+}
+function fmtDuration(ms){
+  if(ms==null || !Number.isFinite(ms) || ms<0) return '—';
+  const totalSec=Math.round(ms/1000);
+  const h=Math.floor(totalSec/3600), m=Math.floor((totalSec%3600)/60), s=totalSec%60;
+  return `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}min ${String(s).padStart(2,'0')}s`;
+}
+function slaMinutesOf(o){
+  const n=Number(o.SlaMinutos);
+  if(Number.isFinite(n) && n>0) return n;
+  const today = o.RecebidoEm ? new Date(o.RecebidoEm).toISOString().slice(0,10) : '';
+  const rec = dailySlas.find(d=>String(d.Data).slice(0,10)===today);
+  return rec ? Number(rec.Minutos)||120 : 120;
+}
+function isLate(o){
+  if(!o.RecebidoEm || o.ClienteRecebeu) return false;
+  const due = new Date(o.RecebidoEm).getTime() + slaMinutesOf(o)*60000;
+  return Date.now() > due;
+}
+
+function fmtItemRate(items, ms){
+  if(!ms || ms<=0) return '—';
+  const minutes = ms/60000;
+  if(minutes < 60){
+    const perMin = items/minutes;
+    return `${perMin.toFixed(2)} itens/min`;
+  }
+  const perHour = items/(ms/3600000);
+  return `${perHour.toFixed(1)} itens/h`;
+}
+function itemsPerHourSeparation(list){
+  const withPick = list.filter(o=>o.InicioSeparacao && o.FimColeta);
+  const totalItems = withPick.reduce((sum,o)=>sum+(Number(o.QtdItens)||1),0);
+  const totalHours = withPick.reduce((sum,o)=>sum+((new Date(o.FimColeta)-new Date(o.InicioSeparacao))/3600000),0);
+  return totalHours>0 ? (totalItems/totalHours) : null;
+}
+function renderKpis(){
+  const list=filteredOrders();
+  const total=list.length;
+  const done=list.filter(o=>o.ClienteRecebeu).length;
+  const late=list.filter(isLate).length;
+  const urgent=list.filter(o=>o.Prioridade==='Urgente').length;
+  const onTime=done - list.filter(o=>o.ClienteRecebeu && new Date(o.ClienteRecebeu).getTime() > new Date(o.RecebidoEm).getTime()+slaMinutesOf(o)*60000).length;
+  const pct = done>0 ? Math.round((onTime/done)*100) : 0;
+  const pickedList = list.filter(o=>o.InicioSeparacao && o.FimColeta);
+  const totalItemsPicked = pickedList.reduce((sum,o)=>sum+(Number(o.QtdItens)||1),0);
+  const totalMsPicked = pickedList.reduce((sum,o)=>sum+(new Date(o.FimColeta)-new Date(o.InicioSeparacao)),0);
+  const kpis=[
+    {label:'Pedidos no período', value: total, sub: 'Total filtrado', cls:''},
+    {label:'Entregues / retirados', value: done, sub: `${total-done} em andamento`, cls:'good'},
+    {label:'Em atraso (SLA)', value: late, sub: 'Ainda não finalizados', cls: late>0?'bad':'good'},
+    {label:'Prioridade urgente', value: urgent, sub: 'No período', cls: urgent>0?'warn':''},
+    {label:'% dentro do SLA', value: pct+'%', sub: `${onTime} de ${done} concluídos`, cls: pct>=80?'good':(pct>=50?'warn':'bad')},
+    {label:'Ritmo de separação', value: fmtItemRate(totalItemsPicked, totalMsPicked), sub:`${totalItemsPicked} itens em ${fmtDuration(totalMsPicked)}`, cls:''},
+    {label:'SLA padrão do dia', value: fmtHoursMin(dailySlas[dailySlas.length-1]?dailySlas[dailySlas.length-1].Minutos:120), sub:'Referência ativa', cls:''}
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+}
+
+function renderStageMetrics(){
+  const list=filteredOrders();
+  const pairs=[['RecebidoEm','InicioSeparacao','Espera p/ separação'],['InicioSeparacao','FimColeta','Separação'],['FimColeta','CheckoutFinalizado','Coleta → checkout'],['CheckoutFinalizado','SaidaLoja','Checkout → saída'],['SaidaLoja','ClienteRecebeu','Saída → recebimento']];
+  const html=pairs.map(([from,to,label])=>{
+    const durs=list.filter(o=>o[from]&&o[to]).map(o=>new Date(o[to])-new Date(o[from]));
+    const avg=durs.length? durs.reduce((a,b)=>a+b,0)/durs.length : null;
+    return `<div class="stage-metric"><div class="name">${label}</div><div class="time">${fmtDuration(avg)}</div><div class="count">${durs.length} pedido(s)</div></div>`;
+  }).join('');
+  document.getElementById('stageMetrics').innerHTML=html;
+}
+
+function renderHourChart(){
+  const list=filteredOrders();
+  const counts=new Array(24).fill(0);
+  list.forEach(o=>{if(o.RecebidoEm) counts[new Date(o.RecebidoEm).getHours()]++;});
+  const max=Math.max(1,...counts);
+  document.getElementById('hourChart').innerHTML = counts.map((c,h)=>`<div class="bar-col"><div class="bar" style="height:${Math.max(2,(c/max)*180)}px" title="${c} pedido(s)"></div><div class="bar-label">${String(h).padStart(2,'0')}h</div></div>`).join('');
+}
+
+function renderStatusChart(){
+  const list=filteredOrders();
+  const counts=stages.map(()=>0);
+  list.forEach(o=>counts[inferStatus(o)]++);
+  const max=Math.max(1,...counts);
+  document.getElementById('statusChart').innerHTML = stages.map((st,i)=>`
+    <div class="status-row"><div>${st.title}</div><div class="status-track"><div class="status-fill" style="width:${(counts[i]/max)*100}%;background:${st.color}"></div></div><div class="status-count">${counts[i]}</div></div>
+  `).join('');
+}
+
+function kanbanOrders(){
+  const {start,end}=currentRange();
+  const list=filteredOrders();
+  const hint=document.getElementById('kanbanHint');
+  if(start || end){
+    if(hint) hint.textContent='Filtro de data ativo: exibindo todos os pedidos do período, inclusive os já concluídos.';
+    return list;
+  }
+  if(hint) hint.textContent='Mostrando pedidos pendentes + concluídos de hoje. Use os filtros de data acima para ver pedidos concluídos de outros dias.';
+  const todayStr = new Date().toDateString();
+  return list.filter(o=> !o.ClienteRecebeu || new Date(o.ClienteRecebeu).toDateString()===todayStr);
+}
+
+function renderKanban(){
+  const list=kanbanOrders();
+  const now=Date.now();
+  document.getElementById('kanbanBoard').innerHTML = stages.map((st,i)=>{
+    const items=list.filter(o=>inferStatus(o)===i);
+    const cards=items.map(o=>{
+      const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+      const late=isLate(o);
+      const nowRef = o.ClienteRecebeu ? new Date(o.ClienteRecebeu).getTime() : now;
+      const enteredAt = o[st.key] || o.RecebidoEm;
+      const totalElapsed = o.RecebidoEm ? nowRef - new Date(o.RecebidoEm).getTime() : null;
+      const stageElapsed = enteredAt ? nowRef - new Date(enteredAt).getTime() : null;
+      const slaMin = slaMinutesOf(o);
+      const isCustomSla = Number.isFinite(Number(o.SlaMinutos)) && Number(o.SlaMinutos)>0;
+      const prazo = o.RecebidoEm ? new Date(new Date(o.RecebidoEm).getTime()+slaMin*60000) : null;
+      const entradaTxt = enteredAt ? new Date(enteredAt).toLocaleTimeString('pt-BR') : '—';
+      const slaTxt = fmtDuration(slaMin*60000);
+      const prazoTxt = prazo ? prazo.toLocaleTimeString('pt-BR') : '—';
+      const itemCount = Number(o.QtdItens)||1;
+      const hasAssignment = o.Separador && String(o.Separador).trim();
+      const changeCount = changes.filter(c=>String(c.PedidoID)===String(o.ID)).length;
+      const isLastStage = i>=stages.length-1;
+      const totalHoursElapsed = (!o.ClienteRecebeu && totalElapsed!=null) ? totalElapsed/3600000 : null;
+      let blinkClass = '';
+      if(o.Prioridade==='Urgente' && !o.ClienteRecebeu) blinkClass='blink-red';
+      else if(totalHoursElapsed!=null && totalHoursElapsed>6) blinkClass='blink-red';
+      else if(totalHoursElapsed!=null && totalHoursElapsed>=4) blinkClass='blink-yellow';
+      const blinkDot = blinkClass ? `<span class="blink-dot ${blinkClass}" title="${blinkClass==='blink-red'?'Atenção: urgente ou acima de 6h em aberto':'Atenção: entre 4h e 6h em aberto'}"></span>` : '';
+      return `<div class="order-card ${o.Prioridade==='Urgente'?'priority':''} ${late?'late':''}" draggable="true" ondragstart="dragStart(event,'${o.ID}')">
+        <div class="order-top"><span class="order-id">${o.ID}</span><span style="display:flex;align-items:center;gap:6px">${blinkDot}<span class="order-type-pill">${o.Tipo||''}</span><button class="card-delete" title="Excluir pedido" onclick="event.stopPropagation();quickDeleteOrder('${o.ID}')">×</button></span></div>
+        <div class="order-client">${client?client.Nome:(o.Cliente||'Cliente')}</div>
+        <div class="order-line"><span class="ic">☎</span>${o.Telefone||client?.Telefone||'—'}<span class="ic" style="margin-left:6px">📄</span>${o.PedidoOriginal?'Pedido colado':'Sem texto colado'}</div>
+        ${changeCount>0?`<div class="order-changes-pill">↺ ${changeCount} alteração(ões)</div>`:''}
+        ${o.Prioridade==='Urgente'?`<div class="order-urgent">URGENTE</div>`:''}
+        <div class="order-line assign" style="cursor:pointer" onclick="openAssignment('${o.ID}')" title="Clique para definir o separador"><span class="ic">👤</span><span class="${hasAssignment?'set':'missing'}">${hasAssignment?('Separador: '+o.Separador):'Separador não definido'}</span><span class="ic" style="margin-left:6px">🧺</span>${itemCount} item(ns)</div>
+        <div class="timer-box">
+          <div><div class="timer-label">Tempo total</div><div class="timer-value">${fmtDuration(totalElapsed)}</div></div>
+          <div><div class="timer-label">Na etapa</div><div class="timer-value" style="${late?'color:var(--red)':''}">${fmtDuration(stageElapsed)}</div></div>
+        </div>
+        <div class="order-sub">Entrada: <b>${entradaTxt}</b> &nbsp; SLA: <b>${slaTxt}</b></div>
+        <div class="order-sub">Prazo: <b>${prazoTxt}</b> &nbsp; ${isCustomSla?'SLA do pedido':'SLA padrão'}</div>
+        <div class="order-actions">
+          <button class="btn" onclick="openItems('${o.ID}')">Pedido</button>
+          <button class="btn" onclick="openAssignment('${o.ID}')">Separador / SLA</button>
+          <button class="btn" onclick="openDetail('${o.ID}')">Detalhes</button>
+          ${isLastStage?`<button class="btn btn-done" disabled>Concluído</button>`:`<button class="btn btn-advance" onclick="advanceStage('${o.ID}')">Avançar</button>`}
+        </div>
+      </div>`;
+    }).join('') || '<div class="empty">Sem pedidos</div>';
+    return `<div class="kanban-col" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropOn(event,${i})">
+      <div class="col-head"><div class="col-title"><span class="dot" style="background:${st.color}"></span>${st.title}</div><span class="badge">${items.length}</span></div>
+      <div class="cards">${cards}</div>
+    </div>`;
+  }).join('');
+}
+const stageWhatsAppMessages = {
+  RecebidoEm: (o)=>`Olá, ${firstName(o)}! Recebemos seu pedido *${o.ID}* aqui na Rede Nilo e já vamos começar a preparação. 😊`,
+  InicioSeparacao: (o)=>`${firstName(o)}, seu pedido *${o.ID}* entrou em *separação* agora! Em breve te atualizamos.`,
+  FimColeta: (o)=>`${firstName(o)}, a *coleta do seu pedido ${o.ID}* foi finalizada. Estamos seguindo para o checkout.`,
+  CheckoutFinalizado: (o)=>`${firstName(o)}, o *checkout do seu pedido ${o.ID}* foi finalizado com sucesso!`,
+  SaidaLoja: (o)=> o.Tipo==='Retirada'
+    ? `${firstName(o)}, seu pedido *${o.ID}* já está pronto e disponível para *retirada* na loja!`
+    : `${firstName(o)}, seu pedido *${o.ID}* *saiu para entrega*! Já já chega até você.`,
+  ClienteRecebeu: (o)=>`${firstName(o)}, confirmamos a entrega do seu pedido *${o.ID}*. Obrigado por comprar com a Rede Nilo! 💛`
+};
+function firstName(o){
+  const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+  const full=(client?client.Nome:o.Cliente)||'';
+  return full.trim().split(' ')[0] || 'tudo bem';
+}
+function phoneForWhatsApp(o){
+  const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+  let phone=String(o.Telefone||client?.Telefone||'').replace(/\D/g,'');
+  if(!phone) return null;
+  if(phone.length<=11) phone='55'+phone; // adiciona DDI Brasil se não informado
+  return phone;
+}
+function notifyStageViaWhatsApp(o, stageKey){
+  const buildMsg = stageWhatsAppMessages[stageKey];
+  if(!buildMsg) return;
+  const phone = phoneForWhatsApp(o);
+  if(!phone){ showToast('Etapa avançada, mas o pedido não tem telefone para notificar o cliente.'); return; }
+  const stageInfo = stages.find(s=>s.key===stageKey);
+  const wantsToSend = confirm(`Deseja enviar a mensagem de status ("${stageInfo?stageInfo.title:stageKey}") para o cliente via WhatsApp?`);
+  if(!wantsToSend) return;
+  const text = encodeURIComponent(buildMsg(o));
+  window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+}
+
+let draggedId=null;
+function dragStart(e,id){draggedId=id;e.target.classList.add('dragging');}
+function dropOn(e,stageIndex){
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  if(!draggedId) return;
+  setStage(draggedId, stageIndex);
+  draggedId=null;
+}
+function setStage(id, index){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  const previousIndex = inferStatus(o);
+  for(let i=1;i<=index;i++){ if(!o[stages[i].key]) o[stages[i].key]=new Date().toISOString(); }
+  for(let i=index+1;i<stages.length;i++){ o[stages[i].key]=''; }
+  if(!o.RecebidoEm) o.RecebidoEm=new Date().toISOString();
+  // só notifica o cliente quando o pedido avança (não quando é movido para trás por correção)
+  if(index>previousIndex) notifyStageViaWhatsApp(o, stages[index].key);
+  persistOrder(o);
+}
+function advanceStage(id){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  const idx=Math.min(stages.length-1, inferStatus(o)+1);
+  setStage(id, idx);
+}
+
+async function persistOrder(o){
+  renderAll();
+  const res = await api('saveOrder', o);
+  if(!res.ok) showToast('Falha ao salvar pedido na planilha');
+}
+
+function renderAnalysis(){
+  const list=filteredOrders();
+  document.getElementById('analysisBody').innerHTML = list.map(o=>{
+    const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+    const items=Number(o.QtdItens)||1;
+    const wait = (o.RecebidoEm&&o.InicioSeparacao)? new Date(o.InicioSeparacao)-new Date(o.RecebidoEm) : null;
+    const pick = (o.InicioSeparacao&&o.FimColeta)? new Date(o.FimColeta)-new Date(o.InicioSeparacao) : null;
+    const perItem = pick!=null ? pick/items : null;
+    const toCheckout = (o.FimColeta&&o.CheckoutFinalizado)? new Date(o.CheckoutFinalizado)-new Date(o.FimColeta) : null;
+    const toDispatch = (o.CheckoutFinalizado&&o.SaidaLoja)? new Date(o.SaidaLoja)-new Date(o.CheckoutFinalizado) : null;
+    const toDelivered = (o.SaidaLoja&&o.ClienteRecebeu)? new Date(o.ClienteRecebeu)-new Date(o.SaidaLoja) : null;
+    const cycle = (o.RecebidoEm&&o.ClienteRecebeu)? new Date(o.ClienteRecebeu)-new Date(o.RecebidoEm) : null;
+    const sla = slaMinutesOf(o);
+    const withinSla = cycle!=null ? (cycle <= sla*60000) : null;
+    return `<tr>
+      <td>${o.ID}</td><td>${client?client.Nome:o.Cliente||''}</td><td>${o.Separador||'—'}</td><td>${items}</td>
+      <td>${o.RecebidoEm?new Date(o.RecebidoEm).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.InicioSeparacao?new Date(o.InicioSeparacao).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.FimColeta?new Date(o.FimColeta).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.CheckoutFinalizado?new Date(o.CheckoutFinalizado).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.SaidaLoja?new Date(o.SaidaLoja).toLocaleString('pt-BR'):'—'}</td>
+      <td>${o.ClienteRecebeu?new Date(o.ClienteRecebeu).toLocaleString('pt-BR'):'—'}</td>
+      <td>${fmtDuration(wait)}</td><td>${fmtDuration(pick)}</td><td>${fmtDuration(perItem)}</td>
+      <td>${fmtDuration(toCheckout)}</td><td>${fmtDuration(toDispatch)}</td><td>${fmtDuration(toDelivered)}</td><td>${fmtDuration(cycle)}</td>
+      <td>${sla} min</td>
+      <td>${withinSla===null?'—':(withinSla?'<span class="sla-ok">Dentro do SLA</span>':'<span class="sla-bad">Fora do SLA</span>')}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="19" class="empty">Sem pedidos no período</td></tr>';
+}
+
+function renderSeparation(){
+  const filterSel=document.getElementById('separationFilter');
+  const selected=filterSel.value;
+
+  const fullList=filteredOrders().filter(o=>o.InicioSeparacao && o.FimColeta);
+  const overall = itemsPerHourSeparation(fullList);
+  const totalItemsAll = fullList.reduce((sum,o)=>sum+(Number(o.QtdItens)||1),0);
+  const totalOrdersAll = fullList.length;
+
+  const bySeparatorAll = {};
+  fullList.forEach(o=>{
+    const name = (o.Separador && String(o.Separador).trim()) || 'Sem separador definido';
+    const items = Number(o.QtdItens)||1;
+    const ms = new Date(o.FimColeta) - new Date(o.InicioSeparacao);
+    if(!bySeparatorAll[name]) bySeparatorAll[name] = {name, orders:0, items:0, ms:0, detail:[]};
+    bySeparatorAll[name].orders++; bySeparatorAll[name].items+=items; bySeparatorAll[name].ms+=ms;
+    bySeparatorAll[name].detail.push(`${o.ID} (${items} item${items>1?'s':''})`);
+  });
+  const rankingAll = Object.values(bySeparatorAll).map(s=>({
+    ...s, hours: s.ms/3600000,
+    itemsPerHour: s.ms>0 ? s.items/(s.ms/3600000) : 0,
+    msPerItem: s.items>0 ? s.ms/s.items : 0
+  })).sort((a,b)=>b.itemsPerHour-a.itemsPerHour);
+
+  // popula o filtro preservando a seleção atual
+  const names=rankingAll.map(s=>s.name);
+  filterSel.innerHTML = '<option value="">Todos</option>' + names.map(n=>`<option value="${n}" ${n===selected?'selected':''}>${n}</option>`).join('');
+
+  const ranking = selected ? rankingAll.filter(s=>s.name===selected) : rankingAll;
+  const list = selected ? fullList.filter(o=>((o.Separador&&String(o.Separador).trim())||'Sem separador definido')===selected) : fullList;
+  const totalItems = selected ? ranking.reduce((s,r)=>s+r.items,0) : totalItemsAll;
+  const totalOrders = selected ? ranking.reduce((s,r)=>s+r.orders,0) : totalOrdersAll;
+  const totalMs = list.reduce((sum,o)=>sum+(new Date(o.FimColeta)-new Date(o.InicioSeparacao)),0);
+  const totalHours = totalMs/3600000;
+
+  const MIN_SAMPLE_MINUTES = 5;
+  const best = rankingAll[0];
+  const sampleWarning = (totalMs/60000 < MIN_SAMPLE_MINUTES) ? ' — amostra pequena, resultado pode não ser representativo' : '';
+  const bestWarning = (best && best.ms/60000 < MIN_SAMPLE_MINUTES) ? ' — amostra pequena' : '';
+  document.getElementById('separationKpis').innerHTML = [
+    {label: selected? 'Ritmo — '+selected : 'Ritmo geral de separação', value: fmtItemRate(totalItems, totalMs), sub:`${totalItems} itens em ${fmtDuration(totalMs)} (${totalOrders} pedido(s))${sampleWarning}`, cls: sampleWarning?'warn':''},
+    {label:'Tempo total em separação', value: fmtDuration(totalMs), sub:'Soma do período filtrado', cls:''},
+    {label:'Separadores ativos', value: rankingAll.length, sub:'No período filtrado', cls:''},
+    {label:'Melhor desempenho', value: best? fmtItemRate(best.items,best.ms) : '—', sub: best? best.name+bestWarning : 'Sem dados', cls: bestWarning?'warn':'good'}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+
+  document.getElementById('separationBody').innerHTML = ranking.map((s,i)=>`<tr title="Pedidos considerados: ${s.detail.join(', ')}">
+    <td>${i+1}º</td><td>${s.name}</td><td>${s.orders}</td><td>${s.items} <span style="color:var(--muted);font-weight:400">ⓘ</span></td><td>${fmtDuration(s.ms)}</td><td><b>${fmtItemRate(s.items,s.ms)}</b>${s.ms/60000<MIN_SAMPLE_MINUTES?' <span style="color:var(--orange);font-weight:800">(amostra pequena)</span>':''}</td><td>${fmtDuration(s.msPerItem)}</td>
+  </tr>`).join('') || '<tr><td colspan="7" class="empty">Sem pedidos com separação concluída no período</td></tr>';
+
+  // gráfico por tempo de separação
+  const byTime=[...ranking].sort((a,b)=>b.ms-a.ms);
+  const maxMs=Math.max(1,...byTime.map(s=>s.ms));
+  document.getElementById('separationTimeChart').innerHTML = byTime.map(s=>`
+    <div class="status-row"><div>${s.name}</div><div class="status-track"><div class="status-fill" style="width:${(s.ms/maxMs)*100}%;background:var(--primary)"></div></div><div class="status-count">${fmtDuration(s.ms)}</div></div>
+  `).join('') || '<div class="empty">Sem dados no período</div>';
+
+  // gráfico por quantidade de itens
+  const byItems=[...ranking].sort((a,b)=>b.items-a.items);
+  const maxItems=Math.max(1,...byItems.map(s=>s.items));
+  document.getElementById('separationItemsChart').innerHTML = byItems.map(s=>`
+    <div class="status-row"><div>${s.name}</div><div class="status-track"><div class="status-fill" style="width:${(s.items/maxItems)*100}%;background:var(--blue)"></div></div><div class="status-count">${s.items}</div></div>
+  `).join('') || '<div class="empty">Sem dados no período</div>';
+}
+
+function nextOccurrenceId(){const max=occurrences.reduce((m,o)=>Math.max(m,parseInt(String(o.ID||'').replace(/\D/g,''),10)||0),0);return 'OCR-'+(max+1);}
+
+function occurrenceRange(){
+  const s=document.getElementById('occDateStart').value, e=document.getElementById('occDateEnd').value;
+  return {start: s? new Date(s+'T00:00:00'): null, end: e? new Date(e+'T23:59:59'): null};
+}
+function filteredOccurrences(){
+  const {start,end}=occurrenceRange();
+  const typeFilter=document.getElementById('occFilterType').value;
+  const sectorFilter=document.getElementById('occFilterSector').value;
+  const clientFilter=document.getElementById('occFilterClient').value;
+  return occurrences.filter(o=>{
+    if(o.Data){ const d=new Date(o.Data); if(start&&d<start) return false; if(end&&d>end) return false; }
+    if(typeFilter && o.TipoOcorrencia!==typeFilter) return false;
+    if(sectorFilter && o.Setor!==sectorFilter) return false;
+    if(clientFilter && String(o.ClienteID)!==String(clientFilter)) return false;
+    return true;
+  });
+}
+
+function renderOccurrences(){
+  const list=filteredOccurrences();
+
+  // popular filtros (tipo, setor, cliente) preservando seleção atual
+  const typeSel=document.getElementById('occFilterType'), curType=typeSel.value;
+  const allTypes=dedupePreferClean([...DEFAULT_OCC_TYPES_FALLBACK, ...occurrenceTypes, ...occurrences.map(o=>o.TipoOcorrencia)].filter(Boolean));
+  typeSel.innerHTML='<option value="">Todos</option>'+allTypes.map(t=>`<option value="${t}" ${t===curType?'selected':''}>${t}</option>`).join('');
+
+  const sectorSel=document.getElementById('occFilterSector'), curSector=sectorSel.value;
+  const allSectors=dedupePreferClean([...DEFAULT_OCC_SECTORS_FALLBACK, ...occurrenceSectors, ...occurrences.map(o=>o.Setor)].filter(Boolean));
+  sectorSel.innerHTML='<option value="">Todos</option>'+allSectors.map(s=>`<option value="${s}" ${s===curSector?'selected':''}>${s}</option>`).join('');
+
+  const clientSel=document.getElementById('occFilterClient'), curClient=clientSel.value;
+  const clientIdsWithOcc=[...new Set(occurrences.map(o=>String(o.ClienteID)))];
+  clientSel.innerHTML='<option value="">Todos</option>'+clientIdsWithOcc.map(id=>{
+    const c=clients.find(x=>String(x.ID)===id); return `<option value="${id}" ${id===curClient?'selected':''}>${c?c.Nome:id}</option>`;
+  }).join('');
+
+  // KPIs
+  const total=list.length;
+  const byType={}; list.forEach(o=>byType[o.TipoOcorrencia]=(byType[o.TipoOcorrencia]||0)+1);
+  const bySector={}; list.forEach(o=>bySector[o.Setor]=(bySector[o.Setor]||0)+1);
+  const byClient={}; list.forEach(o=>{const key=String(o.ClienteID); byClient[key]=(byClient[key]||0)+1;});
+  const topType=Object.entries(byType).sort((a,b)=>b[1]-a[1])[0];
+  const topSector=Object.entries(bySector).sort((a,b)=>b[1]-a[1])[0];
+  const topClientEntry=Object.entries(byClient).sort((a,b)=>b[1]-a[1])[0];
+  const topClientName = topClientEntry ? (clients.find(c=>String(c.ID)===topClientEntry[0])?.Nome || topClientEntry[0]) : '—';
+  document.getElementById('occKpis').innerHTML = [
+    {label:'Ocorrências no período', value: total, sub:'Total filtrado', cls: total>0?'bad':'good'},
+    {label:'Tipo mais frequente', value: topType?topType[1]:0, sub: topType?topType[0]:'Sem dados', cls:'warn'},
+    {label:'Setor de origem mais recorrente', value: topSector?topSector[1]:0, sub: topSector?topSector[0]:'Sem dados', cls:'warn'},
+    {label:'Cliente mais afetado', value: topClientEntry?topClientEntry[1]:0, sub: topClientName, cls:''}
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div></div>`).join('');
+
+  // gráfico por tipo
+  const typeEntries=Object.entries(byType).sort((a,b)=>b[1]-a[1]);
+  const maxType=Math.max(1,...typeEntries.map(e=>e[1]));
+  document.getElementById('occTypeChart').innerHTML = typeEntries.map(([name,count])=>`
+    <div class="status-row"><div>${name}</div><div class="status-track"><div class="status-fill" style="width:${(count/maxType)*100}%;background:var(--red)"></div></div><div class="status-count">${count}</div></div>
+  `).join('') || '<div class="empty">Sem ocorrências no período</div>';
+
+  // gráfico por setor
+  const sectorEntries=Object.entries(bySector).sort((a,b)=>b[1]-a[1]);
+  const maxSector=Math.max(1,...sectorEntries.map(e=>e[1]));
+  document.getElementById('occSectorChart').innerHTML = sectorEntries.map(([name,count])=>`
+    <div class="status-row"><div>${name}</div><div class="status-track"><div class="status-fill" style="width:${(count/maxSector)*100}%;background:var(--orange)"></div></div><div class="status-count">${count}</div></div>
+  `).join('') || '<div class="empty">Sem ocorrências no período</div>';
+
+  // ranking de clientes
+  const clientRanking=Object.entries(byClient).map(([id,count])=>{
+    const clientOccs=list.filter(o=>String(o.ClienteID)===id);
+    const typeCounts={}; clientOccs.forEach(o=>typeCounts[o.TipoOcorrencia]=(typeCounts[o.TipoOcorrencia]||0)+1);
+    const commonType=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0];
+    return {id, name: clients.find(c=>String(c.ID)===id)?.Nome || id, count, commonType: commonType?commonType[0]:'—'};
+  }).sort((a,b)=>b.count-a.count);
+  document.getElementById('occClientRanking').innerHTML = clientRanking.map((r,i)=>`<tr><td>${i+1}º</td><td>${r.name}</td><td>${r.count}</td><td>${r.commonType}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">Sem ocorrências no período</td></tr>';
+
+  // tabela de registros
+  document.getElementById('occurrencesBody').innerHTML = list.slice().sort((a,b)=>new Date(b.Data)-new Date(a.Data)).map(o=>{
+    const client=clients.find(c=>String(c.ID)===String(o.ClienteID));
+    return `<tr>
+      <td>${o.Data?new Date(o.Data).toLocaleDateString('pt-BR'):'—'}</td>
+      <td>${client?client.Nome:o.Cliente||'—'}</td>
+      <td>${o.PedidoID||'—'}</td>
+      <td>${o.TipoOcorrencia||'—'}</td>
+      <td>${o.Nome||'—'}</td>
+      <td>${o.Setor||'—'}</td>
+      <td style="white-space:normal;max-width:260px">${o.Descricao||''}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteOccurrence('${o.ID}')">Excluir</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" class="empty">Nenhuma ocorrência registrada no período</td></tr>';
+}
+
+function openOccurrenceModal(){
+  document.getElementById('occClient').innerHTML = '<option value="" disabled selected>Selecione o cliente...</option>' + sortedClients().map(c=>`<option value="${c.ID}">${c.Nome} — ${c.Telefone}</option>`).join('');
+  document.getElementById('occOrder').innerHTML = '<option value="">Nenhum</option>' + orders.map(o=>`<option value="${o.ID}">${o.ID} — ${o.Cliente||''}</option>`).join('');
+  const typeSel=document.getElementById('occType');
+  const allTypes=dedupePreferClean([...DEFAULT_OCC_TYPES_FALLBACK, ...occurrenceTypes]);
+  typeSel.innerHTML = allTypes.map(t=>`<option value="${t}">${t}</option>`).join('') + '<option value="__novo__">＋ Cadastrar novo tipo...</option>';
+  document.getElementById('occNewTypeField').style.display='none';
+  document.getElementById('occNewType').value='';
+  const sectorSel=document.getElementById('occSector');
+  const allSectors=dedupePreferClean([...DEFAULT_OCC_SECTORS_FALLBACK, ...occurrenceSectors]);
+  sectorSel.innerHTML = allSectors.map(s=>`<option value="${s}">${s}</option>`).join('') + '<option value="__novo__">＋ Cadastrar novo setor...</option>';
+  document.getElementById('occNewSectorField').style.display='none';
+  document.getElementById('occNewSector').value='';
+  document.getElementById('occDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('occName').value='';
+  document.getElementById('occDescription').value='';
+  openModal('occurrenceModal');
+}
+function normalizeForDedupe(s){
+  return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+}
+function isBrokenText(s){
+  return /[√Ã]|£|¢|©|ª/.test(String(s||''));
+}
+function dedupePreferClean(list){
+  const seen = new Map(); // chave normalizada -> valor escolhido
+  list.forEach(v=>{
+    if(!v) return;
+    const key = normalizeForDedupe(v);
+    if(!key) return;
+    const current = seen.get(key);
+    if(!current){ seen.set(key, v); return; }
+    // troca o valor guardado pelo atual somente se o atual estiver "limpo" e o guardado estiver corrompido
+    if(isBrokenText(current) && !isBrokenText(v)) seen.set(key, v);
+  });
+  return [...seen.values()];
+}
+const DEFAULT_OCC_TYPES_FALLBACK=['Produtos não faturado','Quantidade errada','Produto trocado','Não conferido na prevenção'];
+const DEFAULT_OCC_SECTORS_FALLBACK=['Pedido televendas','Separação','Caixa','Prevenção','Entrega'];
+function onOccTypeChange(){
+  const v=document.getElementById('occType').value;
+  document.getElementById('occNewTypeField').style.display = v==='__novo__' ? 'block' : 'none';
+}
+function onOccSectorChange(){
+  const v=document.getElementById('occSector').value;
+  document.getElementById('occNewSectorField').style.display = v==='__novo__' ? 'block' : 'none';
+}
+async function saveOccurrence(){
+  const clientId=document.getElementById('occClient').value;
+  const client=clients.find(c=>String(c.ID)===String(clientId));
+  let type=document.getElementById('occType').value;
+  if(type==='__novo__'){
+    type=document.getElementById('occNewType').value.trim();
+    if(!type){showToast('Informe o novo tipo de ocorrência.');return;}
+  }
+  const name=document.getElementById('occName').value.trim();
+  let sector=document.getElementById('occSector').value;
+  if(sector==='__novo__'){
+    sector=document.getElementById('occNewSector').value.trim();
+    if(!sector){showToast('Informe o novo setor de origem.');return;}
+  }
+  const date=document.getElementById('occDate').value;
+  if(!client || !type || !name || !sector || !date){showToast('Preencha cliente, data, tipo, responsável e setor.');return;}
+
+  const o={
+    ID: nextOccurrenceId(), Data: new Date(date+'T00:00:00').toISOString(), ClienteID: client.ID, Cliente: client.Nome,
+    PedidoID: document.getElementById('occOrder').value || '', TipoOcorrencia: type, Nome: name, Setor: sector,
+    Descricao: document.getElementById('occDescription').value.trim()
+  };
+  const isNewType = !occurrenceTypes.includes(type);
+  const isNewSector = !occurrenceSectors.includes(sector);
+  occurrences.push(o);
+  if(isNewType) occurrenceTypes.push(type);
+  if(isNewSector) occurrenceSectors.push(sector);
+  pendingSaveIds.add(o.ID);
+  closeModal('occurrenceModal'); renderAll();
+  const res=await api('saveOccurrence', o);
+  pendingSaveIds.delete(o.ID);
+  if(!res.ok){
+    occurrences=occurrences.filter(x=>x.ID!==o.ID);
+    renderAll();
+    alert('Não foi possível salvar a ocorrência na planilha. Verifique a conexão e tente novamente.');
+    return;
+  }
+  if(isNewType) await api('addOccurrenceType', {tipo:type});
+  if(isNewSector) await api('addOccurrenceSector', {setor:sector});
+  showToast('Ocorrência registrada.');
+}
+async function deleteOccurrence(id){
+  if(!confirm('Excluir esta ocorrência definitivamente?')) return;
+  occurrences=occurrences.filter(x=>String(x.ID)!==String(id));
+  renderAll();
+  const res=await api('deleteOccurrence',{id});
+  if(!res.ok) showToast('Falha ao excluir ocorrência na planilha'); else showToast('Ocorrência excluída.');
+}
+
+function sortedClients(){
+  return clients.slice().sort((a,b)=>String(a.Nome||'').localeCompare(String(b.Nome||''),'pt-BR',{sensitivity:'base'}));
+}
+function renderClients(){
+  const q=(document.getElementById('clientSearch').value||'').toLowerCase();
+  const list=clients.filter(c=>!q || [c.ID,c.Nome,c.Telefone,c.Bairro].join(' ').toLowerCase().includes(q))
+    .slice().sort((a,b)=>String(a.Nome||'').localeCompare(String(b.Nome||''),'pt-BR',{sensitivity:'base'}));
+  document.getElementById('clientsBody').innerHTML = list.map(c=>`<tr>
+    <td>${c.ID}</td><td>${c.Nome}</td><td>${c.Telefone}</td><td>${c.Tipo}</td><td>${c.Bairro||''}</td><td>${c.Cidade||''}</td><td>${c.Endereco||''}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="editClient('${c.ID}')">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.ID}')">Excluir</button></td>
+  </tr>`).join('') || '<tr><td colspan="8" class="empty">Nenhum cliente cadastrado</td></tr>';
+}
+
+function renderOrderClientSelect(){
+  const sel=document.getElementById('orderClient');
+  const current=sel.value;
+  sel.innerHTML = '<option value="" disabled selected>Selecione o cliente...</option>' + sortedClients().map(c=>`<option value="${c.ID}">${c.Nome} — ${c.Telefone}</option>`).join('');
+  if(current && clients.some(c=>String(c.ID)===current)) sel.value=current;
+}
+
+function renderDailySla(){
+  const today=new Date().toISOString().slice(0,10);
+  const rec=dailySlas.find(d=>String(d.Data).slice(0,10)===today);
+  document.getElementById('dailySlaDisplay').querySelector('.daily-value').textContent = rec? `${fmtHoursMin(rec.Minutos)} — ${rec.Observacao||'sem observação'}` : `Não cadastrado (padrão ${fmtHoursMin(120)})`;
+}
+
+// ===== MODALS =====
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function openOrderModal(){
+  document.getElementById('orderClient').value='';
+  document.getElementById('orderOriginalText').value='';
+  document.getElementById('orderPriority').value='Normal';
+  document.getElementById('orderType').value='Entrega';
+  document.getElementById('orderItemCount').value=1;
+  openModal('orderModal');
+}
+async function saveOrder(){
+  const clientId=document.getElementById('orderClient').value;
+  const client=clients.find(c=>String(c.ID)===String(clientId));
+  const raw=document.getElementById('orderOriginalText').value.trim();
+  if(!client){showToast('Selecione o cliente.');return;}
+  const itemCount = Math.max(1, Number(document.getElementById('orderItemCount').value)||1);
+  const o={
+    ID: nextOrderId(), ClienteID: client.ID, Cliente: client.Nome, Telefone: client.Telefone,
+    Tipo: document.getElementById('orderType').value, Prioridade: document.getElementById('orderPriority').value,
+    Status: 0, RecebidoEm: new Date().toISOString(), InicioSeparacao:'', FimColeta:'', CheckoutFinalizado:'', SaidaLoja:'', ClienteRecebeu:'',
+    PedidoOriginal: raw, Separador:'', QtdItens:itemCount, SlaMinutos:'', Observacao:''
+  };
+  orders.push(o);
+  pendingSaveIds.add(o.ID);
+  closeModal('orderModal'); renderAll();
+  const res=await api('saveOrder', o);
+  pendingSaveIds.delete(o.ID);
+  if(!res.ok){
+    orders=orders.filter(x=>x.ID!==o.ID);
+    renderAll();
+    alert('Não foi possível salvar o pedido na planilha (falha de conexão com o Apps Script). O pedido NÃO foi criado — verifique sua internet ou a URL do Apps Script e tente novamente.');
+  } else {
+    showToast('Pedido salvo.');
+  }
+}
+
+function openClientModal(){
+  document.getElementById('clientModalTitle').textContent='Cadastrar cliente';
+  document.getElementById('clientEditId').value='';
+  ['clientName','clientPhone','clientDistrict','clientAddress'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('clientCity').value='Barra do Garças - MT';
+  document.getElementById('clientType').value='Pessoa física';
+  openModal('clientModal');
+}
+function editClient(id){
+  const c=clients.find(x=>String(x.ID)===String(id)); if(!c) return;
+  document.getElementById('clientModalTitle').textContent='Editar cliente';
+  document.getElementById('clientEditId').value=c.ID;
+  document.getElementById('clientName').value=c.Nome||'';
+  document.getElementById('clientPhone').value=c.Telefone||'';
+  document.getElementById('clientType').value=c.Tipo||'Pessoa física';
+  document.getElementById('clientDistrict').value=c.Bairro||'';
+  document.getElementById('clientCity').value=c.Cidade||'';
+  document.getElementById('clientAddress').value=c.Endereco||'';
+  openModal('clientModal');
+}
+async function deleteClient(id){
+  const linkedOrders = orders.filter(o=>String(o.ClienteID)===String(id)).length;
+  const client = clients.find(c=>String(c.ID)===String(id));
+  const msg = linkedOrders>0
+    ? `${client?client.Nome:id} possui ${linkedOrders} pedido(s) registrado(s). Excluir o cliente NÃO apaga os pedidos, mas eles perderão o vínculo com o cadastro. Deseja continuar?`
+    : `Excluir o cliente ${client?client.Nome:id} definitivamente?`;
+  if(!confirm(msg)) return;
+  clients=clients.filter(x=>String(x.ID)!==String(id));
+  renderAll();
+  const res=await api('deleteClient',{id});
+  if(!res.ok) showToast('Falha ao excluir cliente na planilha'); else showToast('Cliente excluído.');
+}
+async function saveClient(){
+  const name=document.getElementById('clientName').value.trim();
+  const phone=document.getElementById('clientPhone').value.trim();
+  if(!name||!phone){showToast('Preencha nome e telefone.');return;}
+  const editId=document.getElementById('clientEditId').value;
+  const c={
+    ID: editId||nextClientId(), Nome:name, Telefone:phone, Tipo:document.getElementById('clientType').value,
+    Bairro:document.getElementById('clientDistrict').value, Cidade:document.getElementById('clientCity').value, Endereco:document.getElementById('clientAddress').value
+  };
+  const idx=clients.findIndex(x=>String(x.ID)===String(c.ID));
+  const wasNew = idx<0;
+  if(idx>=0) clients[idx]=c; else clients.push(c);
+  pendingSaveIds.add(c.ID);
+  closeModal('clientModal'); renderAll();
+  const res=await api('saveClient', c);
+  pendingSaveIds.delete(c.ID);
+  if(!res.ok){
+    if(wasNew) clients=clients.filter(x=>x.ID!==c.ID);
+    renderAll();
+    alert('Não foi possível salvar o cliente na planilha (falha de conexão com o Apps Script). Verifique sua internet ou a URL do Apps Script e tente novamente.');
+  } else {
+    showToast('Cliente salvo.');
+  }
+}
+
+function openDetail(id){
+  selectedDetailId=id;
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  document.getElementById('detailContent').innerHTML = stages.map(st=>`
+    <div class="field" style="margin-bottom:12px"><label>${st.title}</label><input type="datetime-local" id="dt-${st.key}" value="${toLocalInput(o[st.key])}"></div>
+  `).join('');
+  document.getElementById('saveTimesBtn').onclick=()=>saveTimes(id);
+  document.getElementById('deleteOrderBtn').onclick=()=>deleteOrder(id);
+  openModal('detailModal');
+}
+function toLocalInput(iso){ if(!iso) return ''; const d=new Date(iso); const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+async function saveTimes(id){
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  stages.forEach(st=>{ const v=document.getElementById('dt-'+st.key).value; o[st.key]= v? new Date(v).toISOString() : ''; });
+  closeModal('detailModal');
+  await persistOrder(o);
+  showToast('Horários atualizados.');
+}
+async function deleteOrder(id){
+  if(!confirm('Excluir este pedido definitivamente?')) return;
+  orders=orders.filter(x=>String(x.ID)!==String(id));
+  closeModal('detailModal'); renderAll();
+  await api('deleteOrder',{id});
+  showToast('Pedido excluído.');
+}
+async function quickDeleteOrder(id){
+  if(!confirm(`Excluir o pedido ${id} definitivamente?`)) return;
+  orders=orders.filter(x=>String(x.ID)!==String(id));
+  renderAll();
+  const res=await api('deleteOrder',{id});
+  if(!res.ok) showToast('Falha ao excluir pedido na planilha'); else showToast('Pedido excluído.');
+}
+
+function openItems(id){
+  selectedItemsOrderId=id;
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  document.getElementById('originalOrderText').textContent=o.PedidoOriginal||'Nenhum texto de WhatsApp foi colado para este pedido.';
+  ['changeQty','changeOriginal','changeResult','changeReason'].forEach(id2=>document.getElementById(id2).value='');
+  renderChangesTable();
+  openModal('itemsModal');
+}
+function renderChangesTable(){
+  const list=changes.filter(c=>String(c.PedidoID)===String(selectedItemsOrderId)).sort((a,b)=>new Date(b.Data)-new Date(a.Data));
+  document.getElementById('changesBody').innerHTML = list.map(c=>{
+    const cls = c.Tipo==='Cancelamento'?'cancel':(c.Tipo==='Inclusão'?'add':'replace');
+    return `<tr><td>${new Date(c.Data).toLocaleString('pt-BR')}</td><td><span class="change-type ${cls}">${c.Tipo}</span></td><td>${c.Quantidade||''}</td><td>${c.ProdutoOriginal||''}</td><td>${c.ProdutoResultado||''}</td><td>${c.Motivo||''}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" class="empty">Nenhuma alteração registrada</td></tr>';
+}
+async function addChange(){
+  const c={
+    ID:'ALT-'+Date.now(), PedidoID: selectedItemsOrderId, Data:new Date().toISOString(),
+    Tipo: document.getElementById('changeType').value, ProdutoOriginal: document.getElementById('changeOriginal').value,
+    ProdutoResultado: document.getElementById('changeResult').value, Quantidade: document.getElementById('changeQty').value,
+    Motivo: document.getElementById('changeReason').value
+  };
+  changes.push(c); renderChangesTable();
+  ['changeQty','changeOriginal','changeResult','changeReason'].forEach(id=>document.getElementById(id).value='');
+  const res=await api('addChange', c);
+  if(!res.ok) showToast('Falha ao registrar alteração na planilha'); else showToast('Alteração registrada.');
+}
+
+function openAssignment(id){
+  selectedAssignmentOrderId=id;
+  const o=orders.find(x=>String(x.ID)===String(id)); if(!o) return;
+  document.getElementById('assignmentSeparator').value=o.Separador||'';
+  document.getElementById('assignmentItemCount').value=o.QtdItens||1;
+  const sla=Number(o.SlaMinutos)||120;
+  document.getElementById('assignmentSlaHours').value=Math.floor(sla/60);
+  document.getElementById('assignmentSlaMinutes').value=sla%60;
+  document.getElementById('assignmentNote').value=o.Observacao||'';
+  openModal('assignmentModal');
+  setTimeout(()=>document.getElementById('assignmentSeparator').focus(),50);
+}
+async function saveAssignment(){
+  const o=orders.find(x=>String(x.ID)===String(selectedAssignmentOrderId)); if(!o) return;
+  o.Separador=document.getElementById('assignmentSeparator').value.trim();
+  o.QtdItens=Number(document.getElementById('assignmentItemCount').value)||1;
+  const h=Number(document.getElementById('assignmentSlaHours').value)||0, m=Number(document.getElementById('assignmentSlaMinutes').value)||0;
+  o.SlaMinutos=h*60+m;
+  o.Observacao=document.getElementById('assignmentNote').value;
+  closeModal('assignmentModal');
+  await persistOrder(o);
+  showToast('Separador e SLA salvos.');
+}
+
+function openDailySlaModal(){
+  document.getElementById('dailySlaDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('dailySlaMinutes').value=120;
+  document.getElementById('dailySlaNote').value='';
+  openModal('dailySlaModal');
+}
+async function saveDailySla(){
+  const s={Data:document.getElementById('dailySlaDate').value, Minutos:Number(document.getElementById('dailySlaMinutes').value)||120, Observacao:document.getElementById('dailySlaNote').value};
+  const idx=dailySlas.findIndex(d=>String(d.Data).slice(0,10)===s.Data);
+  if(idx>=0) dailySlas[idx]=s; else dailySlas.push(s);
+  closeModal('dailySlaModal'); renderDailySla();
+  const res=await api('saveDailySla', s);
+  if(!res.ok) showToast('Falha ao salvar SLA do dia'); else showToast('SLA do dia salvo.');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+// ===== EXPORTAÇÃO EXCEL (xlsx nativo, sem dependências externas) =====
+function exportExcel(){
+  const list=filteredOrders();
+  const pedidosHeader=['ID','Cliente','Telefone','Tipo','Prioridade','Separador','Qtd Itens','SLA (min)','Recebido','Início separação','Fim coleta','Checkout','Saída','Entregue'];
+  const pedidosRows=[pedidosHeader, ...list.map(o=>[o.ID,o.Cliente,o.Telefone,o.Tipo,o.Prioridade,o.Separador,o.QtdItens,o.SlaMinutos,o.RecebidoEm,o.InicioSeparacao,o.FimColeta,o.CheckoutFinalizado,o.SaidaLoja,o.ClienteRecebeu])];
+  const clientesHeader=['ID','Nome','Telefone','Tipo','Bairro','Cidade','Endereco'];
+  const clientesRows=[clientesHeader, ...clients.map(c=>[c.ID,c.Nome,c.Telefone,c.Tipo,c.Bairro,c.Cidade,c.Endereco])];
+  const alteracoesHeader=['ID','PedidoID','Data','Tipo','Produto original','Produto resultado','Quantidade','Motivo'];
+  const alteracoesRows=[alteracoesHeader, ...changes.map(c=>[c.ID,c.PedidoID,c.Data,c.Tipo,c.ProdutoOriginal,c.ProdutoResultado,c.Quantidade,c.Motivo])];
+  const blob=makeXlsx([
+    {name:'Pedidos', rows:pedidosRows, widths:[14,26,16,12,12,20,10,10,20,20,20,20,20,20], headerRows:[0]},
+    {name:'Clientes', rows:clientesRows, widths:[14,28,16,16,20,22,32], headerRows:[0]},
+    {name:'Alteracoes', rows:alteracoesRows, widths:[16,14,20,16,26,26,12,32], headerRows:[0]}
+  ]);
+  const url=URL.createObjectURL(new Blob([blob],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  const a=document.createElement('a'); a.href=url; a.download=`televendas_${new Date().toISOString().slice(0,10)}.xlsx`; a.click();
+  URL.revokeObjectURL(url);
+}
+function makeXlsx(sheets){
+  const files={};const now=new Date().toISOString();
+  files['[Content_Types].xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`;
+  files['_rels/.rels']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`;
+  files['docProps/core.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:creator>Painel de Televendas</dc:creator><cp:lastModifiedBy>Painel de Televendas</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${now}</dcterms:modified></cp:coreProperties>`;
+  files['docProps/app.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Painel de Televendas</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Planilhas</vt:lpstr></vt:variant><vt:variant><vt:i4>${sheets.length}</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size="${sheets.length}" baseType="lpstr">${sheets.map(s=>`<vt:lpstr>${xmlEscape(s.name)}</vt:lpstr>`).join('')}</vt:vector></TitlesOfParts></Properties>`;
+  files['xl/workbook.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="24000" windowHeight="12000"/></bookViews><sheets>${sheets.map((s,i)=>`<sheet name="${xmlEscape(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets><calcPr calcId="191029"/></workbook>`;
+  files['xl/_rels/workbook.xml.rels']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+  files['xl/styles.xml']=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="0.00"/></numFmts><fonts count="3"><font><sz val="10"/><name val="Calibri"/><family val="2"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="10"/><name val="Calibri"/></font><font><b/><color rgb="FF1B2A4A"/><sz val="14"/><name val="Calibri"/></font></fonts><fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1B2A4A"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFC400"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFD9DEE7"/></left><right style="thin"><color rgb="FFD9DEE7"/></right><top style="thin"><color rgb="FFD9DEE7"/></top><bottom style="thin"><color rgb="FFD9DEE7"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFill="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFill="1" applyFont="1" applyBorder="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+  sheets.forEach((s,i)=>files[`xl/worksheets/sheet${i+1}.xml`]=sheetXml(s));
+  return zipStore(files);
+}
+function sheetXml(sheet){
+  const rows=sheet.rows||[],headerRows=new Set(sheet.headerRows||[]),cols=(sheet.widths||[]).map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('');
+  const body=rows.map((row,r)=>`<row r="${r+1}"${headerRows.has(r)?' ht="25" customHeight="1"':''}>${row.map((cell,c)=>cellXml(cell,r,c,headerRows.has(r))).join('')}</row>`).join('');
+  const maxCols=Math.max(1,...rows.map(r=>r.length));const dimension=`A1:${colName(maxCols-1)}${Math.max(1,rows.length)}`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="${dimension}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>${cols}</cols><sheetData>${body}</sheetData><autoFilter ref="A1:${colName(maxCols-1)}${Math.max(1,rows.length)}"/><pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
+}
+function cellXml(cell,r,c,isHeader){
+  const ref=`${colName(c)}${r+1}`;let value=cell,style=isHeader?1:0,type='s';
+  if(value===null||value===undefined||value==='')return `<c r="${ref}" s="${style}"/>`;
+  if(typeof value==='number')return `<c r="${ref}" s="${style}"><v>${Number(value)}</v></c>`;
+  return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xmlEscape(String(value))}</t></is></c>`;
+}
+function colName(n){let s='';for(n++;n>0;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s;}
+function xmlEscape(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+function zipStore(files){
+  const enc=new TextEncoder(),entries=[],chunks=[];let offset=0;const dt=dosDateTime(new Date());
+  Object.entries(files).forEach(([name,content])=>{const n=enc.encode(name),d=typeof content==='string'?enc.encode(content):content,crc=crc32(d);const local=new Uint8Array(30+n.length+d.length),v=new DataView(local.buffer);let p=0;v.setUint32(p,0x04034b50,true);p+=4;v.setUint16(p,20,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,dt.time,true);p+=2;v.setUint16(p,dt.date,true);p+=2;v.setUint32(p,crc,true);p+=4;v.setUint32(p,d.length,true);p+=4;v.setUint32(p,d.length,true);p+=4;v.setUint16(p,n.length,true);p+=2;v.setUint16(p,0,true);p+=2;local.set(n,p);local.set(d,p+n.length);chunks.push(local);entries.push({n,d,crc,offset});offset+=local.length});
+  const centralStart=offset;entries.forEach(e=>{const c=new Uint8Array(46+e.n.length),v=new DataView(c.buffer);let p=0;v.setUint32(p,0x02014b50,true);p+=4;v.setUint16(p,20,true);p+=2;v.setUint16(p,20,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,dt.time,true);p+=2;v.setUint16(p,dt.date,true);p+=2;v.setUint32(p,e.crc,true);p+=4;v.setUint32(p,e.d.length,true);p+=4;v.setUint32(p,e.d.length,true);p+=4;v.setUint16(p,e.n.length,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint32(p,0,true);p+=4;v.setUint32(p,e.offset,true);p+=4;c.set(e.n,p);chunks.push(c);offset+=c.length});
+  const centralSize=offset-centralStart,end=new Uint8Array(22),v=new DataView(end.buffer);let p=0;v.setUint32(p,0x06054b50,true);p+=4;v.setUint16(p,0,true);p+=2;v.setUint16(p,0,true);p+=2;v.setUint16(p,entries.length,true);p+=2;v.setUint16(p,entries.length,true);p+=2;v.setUint32(p,centralSize,true);p+=4;v.setUint32(p,centralStart,true);p+=4;v.setUint16(p,0,true);chunks.push(end);const total=chunks.reduce((a,b)=>a+b.length,0),out=new Uint8Array(total);let pos=0;chunks.forEach(ch=>{out.set(ch,pos);pos+=ch.length});return out;
+}
+function dosDateTime(d){let year=Math.max(1980,d.getFullYear());return{time:(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),date:((year-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate()};}
+const CRC_TABLE=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t;})();
+function crc32(bytes){let c=0xffffffff;for(let i=0;i<bytes.length;i++)c=CRC_TABLE[(c^bytes[i])&255]^(c>>>8);return(c^0xffffffff)>>>0;}
+
+// ===== CLOCK =====
+function tickClock(){document.getElementById('liveClock').textContent=new Date().toLocaleTimeString('pt-BR');}
+setInterval(tickClock,1000); tickClock();
+setInterval(()=>{ if(document.getElementById('view-kanban').classList.contains('active')) renderKanban(); },1000);
+window.addEventListener('click',e=>{
+  if(!e.target.classList.contains('modal-backdrop')) return;
+  const id=e.target.id;
+  // modais com formulário: exige clique no × ou em Cancelar, evitando perda acidental de dados ao clicar fora
+  const protectedModals=['orderModal','clientModal','occurrenceModal','assignmentModal','detailModal'];
+  if(protectedModals.includes(id)) return;
+  e.target.classList.remove('open');
+});
+
+loadAll();
+setInterval(loadAll, 60000); // ressincroniza com a planilha a cada minuto
+</script>
+</body>
+</html>
